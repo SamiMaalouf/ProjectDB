@@ -67,7 +67,7 @@ class User extends Authenticatable
     public static function boot()
     {
         parent::boot();
-        self::observe(new \App\Observers\UserActionObserver);
+        //self::observe(new \App\Observers\UserActionObserver);
     }
 
     public function getEmailVerifiedAtAttribute($value)
