@@ -21,12 +21,9 @@
                     {{ trans('cruds.faqCategory.title_singular') }} {{ trans('global.list') }}
                 </div>
                 <div class="panel-body">
-                    <table class=" table table-bordered table-striped table-hover ajaxTable datatable datatable-FaqCategory">
+                    <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th width="10">
-
-                                </th>
                                 <th>
                                     {{ trans('cruds.faqCategory.fields.id') }}
                                 </th>
@@ -38,6 +35,35 @@
                                 </th>
                             </tr>
                         </thead>
+                        <tbody>
+                            @foreach($faqCategories as $faqCategory)
+                                <tr>
+                                    <td>
+                                        {{ $faqCategory->id }}
+                                    </td>
+                                    <td>
+                                        {{ $faqCategory->category }}
+                                    </td>
+                                    <td>
+
+                                        @can('faq_category_edit')
+                                            <a class="btn btn-xs btn-info" href="{{ route('admin.faq-categories.edit', $faqCategory->id) }}">
+                                                {{ trans('global.edit') }}
+                                            </a>
+                                        @endcan
+                                        @can('faq_category_delete')
+                                            <form action="{{ route('admin.faq-categories.destroy', $faqCategory->id) }}" method="POST" style="display: inline-block;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('{{ trans('global.areYouSure') }}')">
+                                                    {{ trans('global.delete') }}
+                                                </button>
+                                            </form>
+                                        @endcan
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -47,66 +73,4 @@
         </div>
     </div>
 </div>
-@endsection
-@section('scripts')
-@parent
-<script>
-    $(function () {
-  let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-@can('faq_category_delete')
-  let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
-  let deleteButton = {
-    text: deleteButtonTrans,
-    url: "{{ route('admin.faq-categories.massDestroy') }}",
-    className: 'btn-danger',
-    action: function (e, dt, node, config) {
-      var ids = $.map(dt.rows({ selected: true }).data(), function (entry) {
-          return entry.id
-      });
-
-      if (ids.length === 0) {
-        alert('{{ trans('global.datatables.zero_selected') }}')
-
-        return
-      }
-
-      if (confirm('{{ trans('global.areYouSure') }}')) {
-        $.ajax({
-          headers: {'x-csrf-token': _token},
-          method: 'POST',
-          url: config.url,
-          data: { ids: ids, _method: 'DELETE' }})
-          .done(function () { location.reload() })
-      }
-    }
-  }
-  dtButtons.push(deleteButton)
-@endcan
-
-  let dtOverrideGlobals = {
-    buttons: dtButtons,
-    processing: true,
-    serverSide: true,
-    retrieve: true,
-    aaSorting: [],
-    ajax: "{{ route('admin.faq-categories.index') }}",
-    columns: [
-      { data: 'placeholder', name: 'placeholder' },
-{ data: 'id', name: 'id' },
-{ data: 'category', name: 'category' },
-{ data: 'actions', name: '{{ trans('global.actions') }}' }
-    ],
-    orderCellsTop: true,
-    order: [[ 1, 'desc' ]],
-    pageLength: 100,
-  };
-  let table = $('.datatable-FaqCategory').DataTable(dtOverrideGlobals);
-  $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
-      $($.fn.dataTable.tables(true)).DataTable()
-          .columns.adjust();
-  });
-  
-});
-
-</script>
 @endsection

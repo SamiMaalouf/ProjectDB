@@ -11,6 +11,7 @@ class CourseController extends Controller
     {
         $courses = Course::with(['lessons'])
             ->withCount('lessons')
+            ->where('is_published', true)
             ->paginate(12);
             
         return view('frontend.courses.index', compact('courses'));

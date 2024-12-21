@@ -38,6 +38,19 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+    // public function redirectTo()
+    // {
+    //     if (auth()->user()->is_admin) {
+    //         return '/admin';
+    //     }
+    
+    //     if (!(auth()->user()->is_admi) {
+    //         abort(403, 'Unauthorized access.');
+    //     }
+    
+    //     return redirect()->route('');
+    // }
+
     public function redirectTo()
     {
         if (auth()->user()->is_admin) {
